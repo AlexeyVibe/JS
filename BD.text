@@ -1,0 +1,72 @@
+-- создаем таблицу для фильмов
+CREATE TABLE films (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    year INTEGER,
+    country VARCHAR(255),
+    genre VARCHAR(255),
+    tagline VARCHAR(255),
+    director INTEGER REFERENCES persons(id) ON DELETE CASCADE,
+    writer INTEGER REFERENCES persons(id) ON DELETE CASCADE,
+    producer INTEGER REFERENCES persons(id) ON DELETE CASCADE,
+    cinematographer INTEGER REFERENCES persons(id) ON DELETE CASCADE,
+    composer INTEGER REFERENCES persons(id) ON DELETE CASCADE,
+    production_designer INTEGER REFERENCES persons(id) ON DELETE CASCADE,
+    editor INTEGER REFERENCES persons(id) ON DELETE CASCADE,
+    budget INTEGER,
+    marketing_budget INTEGER,
+    us_box_office INTEGER,
+    world_box_office INTEGER,
+    premiere_in_russia DATE,
+    premiere_worldwide DATE,
+    dvd_release DATE,
+    age_rating VARCHAR(255),
+    mpaa_rating VARCHAR(255),
+    runtime INTEGER
+);
+
+-- создаем таблицу для персон (художников, композиторов, монтажеров и т.д.)
+CREATE TABLE person (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    role VARCHAR(255) NOT NULL,
+    birthdate DATE,
+    deathdate DATE,
+    birthplace VARCHAR(255),
+    bio TEXT
+);
+
+
+-- создаем таблицу для ролей персон в фильмах (многие-ко-многим)
+CREATE TABLE film_person (
+    film_id INTEGER REFERENCES films(id) ON DELETE CASCADE,
+    person_id INTEGER REFERENCES persons(id) ON DELETE CASCADE,
+    PRIMARY KEY (film_id, person_id)
+);
+
+-- создаем таблицу для жанров
+CREATE TABLE genres (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+-- создаем таблицу для связи фильмов с жанрами (многие-ко-многим)
+CREATE TABLE film_genre (
+    film_id INTEGER REFERENCES films(id) ON DELETE CASCADE,
+    genre_id INTEGER REFERENCES genres(id) ON DELETE CASCADE,
+    PRIMARY KEY (film_id, genre_id)
+);
+
+-- создаем таблицу для стран зрителей
+CREATE TABLE countries (
+    code CHAR(2) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+-- создаем таблицу для связи фильмов со странами зрителей (один-ко-многим)
+CREATE TABLE film_country (
+    film_id INTEGER REFERENCES films(id) ON DELETE CASCADE,
+    country_code CHAR(2) REFERENCES countries(code) ON DELETE CASCADE,
+    PRIMARY KEY (film_id, country_code),
+    viewers VARCHAR(255),
+);
